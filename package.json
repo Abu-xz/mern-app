@@ -1,0 +1,26 @@
+{
+  "name": "curd-app",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon server/app.js",
+    "start":"node server/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Abu-xz/mern-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Abu-xz/mern-app/issues"
+  },
+  "homepage": "https://github.com/Abu-xz/mern-app#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9"
+  }
+}
