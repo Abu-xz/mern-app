@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import bcryptjs from "bcryptjs";
+import jwt from 'jsonwebtoken'
 import { errorHandler } from "../utils/error.js";
 
 
@@ -37,3 +38,41 @@ export const signup = async (req, res, next) => {
     next(error)
   }
 }
+
+export const login = async (req, res, next) => {
+  console.log('login route reached...');
+  console.log('request body: ', req.body);
+
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      console.log('all field required');
+      return res.status(400).json({ success: false, message: 'All field Required' });
+    }
+    const validUser = await User.findOne({ email });
+    if (!validUser) {
+      console.log('Invalid user credentials.')
+      return next(errorHandler(401, 'Invalid Credentials.'))
+    }
+
+    const validPassword = bcryptjs.compareSync(password, validUser.password)
+    if (validPassword) {
+      console.log('invalid password')
+      return next(errorHandler(401, 'Invalid Credentials.'))
+    }
+
+    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET_KEY);
+    console.log('Login Success')
+
+    const expiryDate = new Date(Date.now() + 3600000) // Expiry in 1 hour
+    res.cookie('access_token', token, { httpOnly: true, expires: expiryDate})
+      .status(200)
+      .json({ success: true, username: validUser.userName, message: 'Login Successful.' })
+
+  } catch (error) {
+    console.log(error)
+    next(error);
+  }
+}
+
+
