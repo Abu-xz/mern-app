@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
+import cors from 'cors'
 
 import userRoutes from './routes/userRoute.js';
 import authRoutes from './routes/authRoute.js';
@@ -10,6 +11,12 @@ dotenv.config(); // configuration for env variables
 const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.LOCAL_MONGO_URI;
+
+// Allow requests from frontend
+app.use(cors({
+    origin: "http://localhost:5173",  
+    credentials: true,
+  }));
 
 app.use(express.json()) // middleware to parse json
 
