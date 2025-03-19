@@ -2,27 +2,29 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 
-import userRouter from './routes/userRoute.js';
+import userRoutes from './routes/userRoute.js';
+import authRoutes from './routes/authRoute.js';
 
 dotenv.config(); // configuration for env variables
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = process.env.LOCAL_MONGO_URI;
 
 app.use(express.json()) // middleware to parse json
-app.use('/api/users', userRouter)
+app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes)
 
 
 
 
 mongoose.connect(MONGO_URI)
-        .then(() => {
-            console.log('Connected to MongoDb');
-        })
-        .catch((err) => {
-            console.log(err)
-        })
+    .then(() => {
+        console.log('Connected to MongoDb');
+    })
+    .catch((err) => {
+        console.log(err)
+    })
 
 app.listen(PORT, () => {
     console.log(`Server running on Port: ${PORT}`)
