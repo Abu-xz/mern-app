@@ -11,10 +11,15 @@
       email: "",
       password: "",
     });
-    const { loading } = useSelector((state) => state.user)
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    const { loading, currentUser } = useSelector((state) => state.user)
+
+    if(currentUser){
+      navigate('/');
+      return;
+    }
 
     const handleChange = (e) => {
       setFormData({ ...formData, [e.target.name]: e.target.value })
