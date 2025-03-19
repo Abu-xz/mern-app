@@ -1,18 +1,44 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { logoutUser } from '../redux/user/userSlice'
+import { toast } from 'react-toastify'
+import { useDispatch, useSelector } from 'react-redux'
+import { persistor } from '../redux/store'
+import axios from 'axios'
 
 const Header = () => {
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const user = useSelector((state) => state.user.currentUser)
+
+    const handleLogout = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/api/auth/logout');
+            dispatch(logoutUser()) // remove current user state
+            persistor.purge(); // clear persisted user state
+            toast.success(response.data.message)
+            navigate('/login');
+
+        } catch {
+            toast.error('Logout failed')
+        }
+    }
+
     return (
-        <header className='bg-slate-700 px-8 py-4 text-white items-center flex justify-between'>
+        <header className='bg-slate-700 px-2 sm:px-8 py-4 text-white items-center flex justify-between'>
             <Link to={'/'}>
                 <h1 className=' text-md font-bold md:text-2xl'>CRUD APP</h1>
             </Link>
             <nav className='flex'>
                 <ul className='flex justify-evenly gap-x-5 md:gap-x-10'>
-                    <Link to={'/'} className='cursor-pointer hover:text-slate-400 px-2 rounded text-sm md:text-lg'>Home</Link>
-                    <Link to={'/about'} className='cursor-pointer hover:text-slate-400 px-2 rounded text-sm md:text-lg'>About</Link>
-                    <Link to={'/login'} className='cursor-pointer hover:text-slate-400 px-2 rounded text-sm md:text-lg'>login</Link>
+                    <Link to={'/'} className='hidden sm:flex cursor-pointer hover:text-slate-400 px-2 rounded text-sm md:text-lg'>Home</Link>
                     <Link to={'/profile'} className='cursor-pointer hover:text-slate-400 px-2 rounded text-sm md:text-lg'>Profile</Link>
+                    {user ?
+                        <p onClick={handleLogout} className='hidden sm:flex cursor-pointer hover:text-red-400 px-2 rounded text-sm md:text-lg'>Logout</p>
+                        :
+                        <Link to={'/login'} className='hidden sm:flex cursor-pointer hover:text-slate-400 px-2 rounded text-sm md:text-lg'>Login</Link>
+                    }
                 </ul>
             </nav>
         </header>
