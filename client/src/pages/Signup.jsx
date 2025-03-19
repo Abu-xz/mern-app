@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -11,6 +11,7 @@ const Signup = () => {
         password: '',
     });
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,19 +21,22 @@ const Signup = () => {
         e.preventDefault();
         setIsLoading(true)
         // implement frontend validation
-
         console.log(formData)
         try {
             const response = await axios.post('http://localhost:5000/api/auth/signup', formData)
             console.log(response.data)
-            setFormData({
-                username: '',
-                email: '',
-                password: '',
-            })
-            toast.success(response.data.message)
-            // navigate to login / home
-            setIsLoading(false)
+            if(response.data.success){
+                setFormData({
+                    username: '',
+                    email: '',
+                    password: '',
+                })
+                toast.success(response.data.message)
+                setIsLoading(false)
+                navigate('/login')
+            }else{
+                toast.error(response.data.message)
+            }
         } catch (error) {
             setIsLoading(false)
             toast.error(error.response.data.message)

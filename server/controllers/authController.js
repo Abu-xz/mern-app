@@ -47,7 +47,7 @@ export const login = async (req, res, next) => {
     const { email, password } = req.body;
     if (!email || !password) {
       console.log('all field required');
-      return res.status(400).json({ success: false, message: 'All field Required' });
+      return next(errorHandler(401, 'All field required!'));
     }
     const validUser = await User.findOne({ email });
     if (!validUser) {
@@ -58,19 +58,18 @@ export const login = async (req, res, next) => {
     const validPassword = bcryptjs.compareSync(password, validUser.password)
     if (validPassword) {
       console.log('invalid password')
-      return next(errorHandler(401, 'Invalid Credentials.'))
+      return next(errorHandler(402, 'Wrong password'))
     }
 
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET_KEY);
     console.log('Login Success')
 
-    const expiryDate = new Date(Date.now() + 3600000) // Expiry in 1 hour
-    res.cookie('access_token', token, { httpOnly: true, expires: expiryDate})
+    const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000) // Expiry in 1 hour
+    res.cookie('access_token', token, { httpOnly: true, expires: expiryDate })
       .status(200)
       .json({ success: true, username: validUser.userName, message: 'Login Successful.' })
 
   } catch (error) {
-    console.log(error)
     next(error);
   }
 }
