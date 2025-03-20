@@ -1,7 +1,7 @@
-import User from "../models/userModel.js";
+import User from "../../models/userModel.js";
 import bcryptjs from "bcryptjs";
 import jwt from 'jsonwebtoken'
-import { errorHandler } from "../utils/error.js";
+import { errorHandler } from "../../utils/error.js";
 
 
 export const signup = async (req, res, next) => {
@@ -74,10 +74,10 @@ export const login = async (req, res, next) => {
   }
 }
 
-export const logout = (req, res) =>{
+export const logout = (req, res) => {
   res.clearCookie('access_token', {
     httpOnly: true
   });
-  res.status(200).json({success: true, message: 'logout successfully'});
+  res.status(200).json({ success: true, message: 'logout successfully' });
 }
 
