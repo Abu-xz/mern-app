@@ -3,7 +3,7 @@
   import { Link, useNavigate } from 'react-router-dom'
   import { useDispatch, useSelector } from 'react-redux';
   import { toast } from 'react-toastify';
-  import { loginStart, loginSuccess, loginFailure } from '../redux/user/userSlice';
+  import { loginStart, loginSuccess, loginFailure } from '../../redux/user/userSlice';
 
 
   const Login = () => {

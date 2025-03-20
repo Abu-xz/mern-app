@@ -1,15 +1,15 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
 import React from 'react'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import Signup from './pages/Signup'
-import Profile from './pages/Profile'
+import Home from './pages/user/Home'
+import Login from './pages/user/Login'
+import Signup from './pages/user/Signup'
+import Profile from './pages/user/Profile'
 import Header from './components/Header'
 import ProtectedRoute from './components/ProtectedRoute'
 import ProtectedAdminRoute from './components/ProtectedAdminRoute'
-import AdminLogin from './pages/AdminLogin'
-import Dashboard from './pages/Dashboard'
+import AdminLogin from './pages/admin/AdminLogin'
+import Dashboard from './pages/admin/Dashboard'
 
 const App = () => {
   return (

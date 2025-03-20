@@ -3,7 +3,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginStart, loginSuccess } from '../redux/user/userSlice';
+import { loginStart, loginSuccess } from '../../redux/user/userSlice';
 
 const Signup = () => {
 
