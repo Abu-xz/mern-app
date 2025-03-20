@@ -25,10 +25,17 @@ export const login = async (req, res, next) => {
 
         const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
         res.cookie('access_token', token, { httpOnly: true, expires: expiryDate })
-            .status(200).json({ success: true,username: validAdmin.userName, role: validAdmin.role, message: 'Login Successfully.', })
+            .status(200).json({ success: true, username: validAdmin.userName, role: validAdmin.role, message: 'Login Successfully.', })
 
     } catch (error) {
         console.log('Admin login error: ', error)
         next(error)
     }
+}
+
+export const logout = (req, res) => {
+    res.clearCookie('access_token', {
+        httpOnly: true
+    });
+    res.status(200).json({ success: true, message: 'logout successfully' });
 }

@@ -1,7 +1,29 @@
+import axios from 'axios';
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom'
+import { logoutUser } from '../redux/user/userSlice';
+import { persistor } from '../redux/store';
+import { toast } from 'react-toastify';
 
-const AdminHeader = ({ isLogged }) => {
+const AdminHeader = () => {
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const role = useSelector((state) => state.user.role)
+
+    const handleLogout = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/api/admin/logout');
+            dispatch(logoutUser()) // remove current user state
+            persistor.purge(); // clear persisted user state
+            toast.success(response.data.message)
+            navigate('/login');
+
+        } catch {
+            toast.error('Logout failed')
+        }
+    }
 
     return (
         <div>
@@ -9,14 +31,20 @@ const AdminHeader = ({ isLogged }) => {
                 <Link to={'/dashboard'}>
                     <h1 className=' text-md font-bold md:text-2xl'>ADMIN PANEL</h1>
                 </Link>
-                {isLogged &&
-                    <nav className='flex'>
-                        <ul className='flex justify-evenly gap-x-5 md:gap-x-10'>
-                            <p to={'/create'} className='cursor-pointer text-orange-500 px-2 rounded text-sm font-semibold md:text-lg'>Create</p>
-                            <p className='hidden sm:flex cursor-pointer hover:text-red-400 px-2 rounded text-sm md:text-lg'>Logout</p>
-                        </ul>
-                    </nav>
-                }
+
+                <nav className='flex'>
+                    <ul className='flex justify-evenly gap-x-5 md:gap-x-10'>
+                        {role &&
+                            <p to={'/create'} className='cursor-pointer text-purple-400 px-2 rounded text-sm font-semibold md:text-lg'>Create</p>
+                        }
+                        {role === 'admin' ?
+                            <p onClick={handleLogout} className='hidden sm:flex cursor-pointer hover:text-red-400 px-2 rounded text-sm md:text-lg'>Logout</p>
+                            :
+                            <Link to={'/signup'} className='hidden sm:flex cursor-pointer hover:text-slate-400 px-2 rounded text-sm md:text-lg'>Sign up</Link>
+                        }
+                    </ul>
+                </nav>
+
             </header>
         </div>
     )

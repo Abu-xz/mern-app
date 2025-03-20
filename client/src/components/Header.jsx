@@ -38,7 +38,7 @@ const Header = () => {
                     {user ?
                         <p onClick={handleLogout} className='hidden sm:flex cursor-pointer hover:text-red-400 px-2 rounded text-sm md:text-lg'>Logout</p>
                         :
-                        <Link to={'/login'} className='hidden sm:flex cursor-pointer hover:text-slate-400 px-2 rounded text-sm md:text-lg'>Login</Link>
+                        <Link to={'/admin-login'} className='hidden sm:flex cursor-pointer hover:text-slate-400 px-2 rounded text-sm md:text-lg'>Dashboard</Link>
                     }
                 </ul>
             </nav>
