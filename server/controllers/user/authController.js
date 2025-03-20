@@ -49,16 +49,17 @@ export const login = async (req, res, next) => {
       console.log('all field required');
       return next(errorHandler(401, 'All field required!'));
     }
-    const validUser = await User.findOne({ email });
+
+    const validUser = await User.findOne({ email }).lean();
     if (!validUser) {
       console.log('Invalid user credentials.')
-      return next(errorHandler(401, 'Invalid Credentials.'))
+      return next(errorHandler(403, 'Invalid Credentials.'))
     }
 
     const validPassword = bcryptjs.compareSync(password, validUser.password)
-    if (validPassword) {
+    if (!validPassword) {
       console.log('invalid password')
-      return next(errorHandler(402, 'Wrong password'))
+      return next(errorHandler(403, 'Invalid Credentials'))
     }
 
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET_KEY);
@@ -67,7 +68,7 @@ export const login = async (req, res, next) => {
     const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000) // Expiry in 1 hour
     res.cookie('access_token', token, { httpOnly: true, expires: expiryDate })
       .status(200)
-      .json({ success: true, username: validUser.userName, message: 'Login Successful.' })
+      .json({ success: true, username: validUser.userName, role: validUser.role, message: 'Login Successful.' })
 
   } catch (error) {
     next(error);

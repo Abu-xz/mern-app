@@ -10,7 +10,8 @@ const Header = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const user = useSelector((state) => state.user.currentUser)
+    const user = useSelector((state) => state.user.username);
+    console.log(user)
 
     const handleLogout = async () => {
         try {
