@@ -47,19 +47,19 @@ export const login = async (req, res, next) => {
     const { email, password } = req.body;
     if (!email || !password) {
       console.log('all field required');
-      return next(errorHandler(401, 'All field required!'));
+      return next(errorHandler(400, 'All field required!'));
     }
 
     const validUser = await User.findOne({ email }).lean();
     if (!validUser) {
       console.log('Invalid user credentials.')
-      return next(errorHandler(403, 'Invalid Credentials.'))
+      return next(errorHandler(401, 'Invalid Credentials.'))
     }
 
     const validPassword = bcryptjs.compareSync(password, validUser.password)
     if (!validPassword) {
       console.log('invalid password')
-      return next(errorHandler(403, 'Invalid Credentials'))
+      return next(errorHandler(401, 'Invalid Credentials'))
     }
 
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET_KEY);

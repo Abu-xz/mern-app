@@ -13,12 +13,17 @@ export const login = async (req, res, next) => {
 
         if (!validAdmin) {
             console.log('invalid admin credential');
-            return res.status(403).json({ success: false, message: 'Invalid Credential.' });
+            return res.status(401).json({ success: false, message: 'Invalid Credential.' });
+        }
+
+        if(validAdmin.role !== 'admin'){
+            console.log(`[AUTH ERROR]: Unauthorized access detected. User role: ${validAdmin?.role || 'undefined'}`);
+            return res.status(403).json({success: false, message: "Access denied. Unauthorized access attempt detected"})
         }
 
         if (validAdmin.password !== password) {
             console.log("Invalid Credential.");
-            return res.status(403).json({ success: false, message: 'Invalid Credential.' });
+            return res.status(401).json({ success: false, message: 'Invalid Credential.' });
         }
 
         const token = jwt.sign({ id: validAdmin._id }, process.env.JWT_SECRET_KEY);
