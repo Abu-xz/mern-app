@@ -8,7 +8,7 @@ import userRoutes from './routes/user/userRoute.js';
 import authRoutes from './routes/user/authRoute.js';
 
 // Admin Route
-import adminAuthRoutes from './routes/admin/authRoute.js'
+import adminRoutes from './routes/admin/authRoute.js'
 
 dotenv.config(); // configuration for env variables
 
@@ -27,7 +27,7 @@ app.use(express.json()) // middleware to parse json
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 
-app.use('/api/admin', adminAuthRoutes)
+app.use('/api/admin', adminRoutes)
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
