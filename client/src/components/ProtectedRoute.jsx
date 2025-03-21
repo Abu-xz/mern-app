@@ -4,9 +4,9 @@ import { Navigate, Outlet } from 'react-router-dom'
 
 const ProtectedRoute = () => {
     console.log('protected route reached')
-    const user = useSelector((state) => state.user.username)
+    const role = useSelector((state) => state.user.role)
 
-    return user ? <Outlet /> : <Navigate to={'/login'}/>
+    return role === 'user' ? <Outlet /> : <Navigate to={'/login'}/>
 }
 
 export default ProtectedRoute

@@ -10,8 +10,8 @@ const Header = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const user = useSelector((state) => state.user.username);
-    console.log(user)
+    const role = useSelector((state) => state.user.role);
+    console.log(role)
 
     const handleLogout = async () => {
         try {
@@ -35,7 +35,7 @@ const Header = () => {
                 <ul className='flex justify-evenly gap-x-5 md:gap-x-10'>
                     <Link to={'/'} className='hidden sm:flex cursor-pointer hover:text-slate-400 px-2 rounded text-sm md:text-lg'>Home</Link>
                     <Link to={'/profile'} className='cursor-pointer hover:text-slate-400 px-2 rounded text-sm md:text-lg'>Profile</Link>
-                    {user ?
+                    {role === 'user' ?
                         <p onClick={handleLogout} className='hidden sm:flex cursor-pointer hover:text-red-400 px-2 rounded text-sm md:text-lg'>Logout</p>
                         :
                         <Link to={'/admin-login'} className='hidden sm:flex cursor-pointer hover:text-slate-400 px-2 rounded text-sm md:text-lg'>Dashboard</Link>

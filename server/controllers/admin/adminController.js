@@ -20,9 +20,7 @@ export const fetchUsers = async (request, response) => {
 
 export const deleteUser = async (request, response, next) => {
     try {
-
         const {id} = request.params;
-        console.log('User id: ',id)
         await User.findByIdAndDelete(id);
         response.status(200).json({message: 'User deleted successfully'})
 
@@ -34,10 +32,11 @@ export const deleteUser = async (request, response, next) => {
 
 export const updateUser = async (request, response, next) => {
     try {
-        const {id} = req.params;
-        const {name, email, role} = req.body;
+        console.log('update user route reached')
+        const {id} = request.params;
+        const {userName, email, role} = request.body;
 
-        const updatedUser = await User.findByIdAndUpdate(id, {userName: name, email, role}, {new: true});
+        const updatedUser = await User.findByIdAndUpdate(id, {userName, email, role}, {new: true});
         if(!updatedUser){
             return response.status(404).json({success: false, message: 'User not found!'})
         }
