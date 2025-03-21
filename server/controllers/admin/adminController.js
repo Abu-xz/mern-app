@@ -5,7 +5,7 @@ import bcryptjs from 'bcryptjs'
 
 export const fetchUsers = async (request, response) => {
     try {
-        const users = await User.find({ role: { $ne: 'admin' } }) // Only users will retrieved
+        const users = await User.find({role: {$ne: 'admin'}}) // Only users will retrieved
         if (!users) {
             console.log('No users found!')
             return response.status(404).json({ success: true, message: 'No users found' })
@@ -53,7 +53,7 @@ export const createUser = async (req, res, next) => {
         console.log('create user route reached');
         const { userName, email, password, role } = req.body;
 
-        if (!userName || !password || !email) {
+        if (!userName || !password || !email || !role) {
             console.log("Missing fields");
             return res.status(400).json({ success: false, message: "All fields are required" });
         }
@@ -70,7 +70,7 @@ export const createUser = async (req, res, next) => {
         const hashedPassword = bcryptjs.hashSync(password, 10);
 
         console.log("Creating new user...");
-        const newUser = new User({ userName, email, password: hashedPassword });
+        const newUser = new User({ userName, email, password: hashedPassword, role});
 
         await newUser.save();
         console.log("User created successfully");

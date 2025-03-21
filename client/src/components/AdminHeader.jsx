@@ -34,9 +34,6 @@ const AdminHeader = () => {
 
                 <nav className='flex'>
                     <ul className='flex justify-evenly gap-x-5 md:gap-x-10'>
-                        {role &&
-                            <p to={'/create'} className='cursor-pointer text-purple-400 px-2 rounded text-sm font-semibold md:text-lg'>Create</p>
-                        }
                         {role === 'admin' ?
                             <p onClick={handleLogout} className='hidden sm:flex cursor-pointer hover:text-red-400 px-2 rounded text-sm md:text-lg'>Logout</p>
                             :
