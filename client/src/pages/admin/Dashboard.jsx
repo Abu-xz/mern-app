@@ -8,7 +8,7 @@ const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false)
-  const [formData, setFormData] = useState({ id: '', userName: '', email: '', role: '' })
+  const [formData, setFormData] = useState([{ id: '', userName: '', email: '', role: '' }])
   const [createUser, setCreateUser] = useState({ userName: '', email: '', password: '', role: '' });
 
 
@@ -18,8 +18,8 @@ const Dashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = axios.get("http://localhost:5000/api/admin/users")
-      setUsers(response.data.users);
+      const response = await axios.get("http://localhost:5000/api/admin/users");
+      setUsers(response.data?.users || []);
     } catch (error) {
       toast.error(`Error Fetching users: ${error.response?.data?.message || error.message}`)
     }

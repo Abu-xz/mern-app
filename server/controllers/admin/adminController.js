@@ -5,6 +5,7 @@ import bcryptjs from 'bcryptjs'
 
 export const fetchUsers = async (request, response) => {
     try {
+        console.log('user route reached')
         const users = await User.find({role: {$ne: 'admin'}}) // Only users will retrieved
         if (!users) {
             console.log('No users found!')
@@ -79,6 +80,7 @@ export const createUser = async (req, res, next) => {
 
 
     } catch (error) {
-
+        console.log(error);
+        next(errorHandler(500, 'Error while creating user'))
     }
 }
