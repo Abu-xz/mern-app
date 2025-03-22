@@ -5,8 +5,7 @@ import bcryptjs from 'bcryptjs'
 
 export const fetchUsers = async (request, response) => {
     try {
-        console.log('user route reached')
-        const users = await User.find({role: {$ne: 'admin'}}) // Only users will retrieved
+        const users = await User.find({ role: { $ne: 'admin' } }) // Only users will retrieved
         if (!users) {
             console.log('No users found!')
             return response.status(404).json({ success: true, message: 'No users found' })
@@ -71,7 +70,7 @@ export const createUser = async (req, res, next) => {
         const hashedPassword = bcryptjs.hashSync(password, 10);
 
         console.log("Creating new user...");
-        const newUser = new User({ userName, email, password: hashedPassword, role});
+        const newUser = new User({ userName, email, password: hashedPassword, role });
 
         await newUser.save();
         console.log("User created successfully");
@@ -83,4 +82,32 @@ export const createUser = async (req, res, next) => {
         console.log(error);
         next(errorHandler(500, 'Error while creating user'))
     }
+}
+
+export const searchUser = async (req, res, next) => {
+    console.log('user search route reached')
+    console.log(req.params);
+
+    const searchQuery = req.params.user;
+    try {
+        const users = await User.find({
+            $or: [
+                {
+                    userName: { $regex: searchQuery, $options: 'i' }
+                }, {
+                    email: { $regex: searchQuery, $options: 'i' }
+                }
+            ]
+        })
+
+        if (users.length === 0) {
+            return res.status(404).json({ success: false, message: 'User not found', users: [] })
+        }
+
+        res.status(200).json({ success: true, message: 'Found Searched User', users })
+    } catch (error) {
+        console.log('error while searching user');
+        next(errorHandler(500, 'Error while Searching user'))
+    }
+
 }
