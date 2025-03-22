@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 import cors from 'cors'
+import cookieParser from 'cookie-parser';
 
 // User Route
 import userRoutes from './routes/user/userRoute.js';
@@ -16,6 +17,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.LOCAL_MONGO_URI;
 
+
+app.use(cookieParser()); // parse cookie
 // Allow requests from frontend
 app.use(cors({
     origin: "http://localhost:5173",  

@@ -15,7 +15,7 @@ const Header = () => {
 
     const handleLogout = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/auth/logout');
+            const response = await axios.get('http://localhost:5000/api/auth/logout', {withCredentials:true});
             dispatch(logoutUser()) // remove current user state
             persistor.purge(); // clear persisted user state
             toast.success(response.data.message)

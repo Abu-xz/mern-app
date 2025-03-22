@@ -20,7 +20,7 @@ const Dashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/users");
+      const response = await axios.get("http://localhost:5000/api/admin/users", { withCredentials: true });
       setUsers(response.data?.users || []);
     } catch (error) {
       toast.error(`Error Fetching users: ${error.response?.data?.message || error.message}`)
@@ -36,7 +36,7 @@ const Dashboard = () => {
     if (!window.confirm('Are you sure you want to delete this user?')) return
 
     try {
-      await axios.delete(`http://localhost:5000/api/admin/users/${id}`);
+      await axios.delete(`http://localhost:5000/api/admin/users/${id}`, { withCredentials: true });
       toast.success('User deleted successfully');
       fetchUsers();
     } catch (error) {
@@ -48,7 +48,7 @@ const Dashboard = () => {
   const handleSave = async () => {
     try {
       const { id, ...data } = formData;
-      await axios.put(`http://localhost:5000/api/admin/users/${id}`, data);
+      await axios.put(`http://localhost:5000/api/admin/users/${id}`, data, {withCredentials:true});
       toast.success('User updated successfully');
       setIsEditing(!isEditing);
       setFormData({ id: '', userName: '', email: '', role: '' });
@@ -64,7 +64,7 @@ const Dashboard = () => {
 
   const handleCreateNewUser = async () => {
     try {
-      const response = await axios.post(`http://localhost:5000/api/admin/create-user`, createUser);
+      const response = await axios.post(`http://localhost:5000/api/admin/create-user`, createUser, {withCredentials:true});
       console.log(response.data);
       toast.success(response.data?.message || 'User Created')
       setIsCreating(!isCreating)
@@ -83,7 +83,7 @@ const Dashboard = () => {
   const handleSearch = async () => {
     try {
       if (search.trim()) {
-        const response = await axios.get(`http://localhost:5000/api/admin/search/${search}`);
+        const response = await axios.get(`http://localhost:5000/api/admin/search/${search}`, {withCredentials:true});
         console.log('User :', response.data.users)
         setUsers(response.data.users || []);
       } else {
@@ -94,7 +94,7 @@ const Dashboard = () => {
       console.log('Error Search user:', error.response)
       // Handle "User not found"
       if (error.response?.status === 404) {
-        setUsers([]); 
+        setUsers([]);
       }
       toast.error(error.response?.data?.message || 'Something went wrong')
     }

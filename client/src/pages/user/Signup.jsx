@@ -28,7 +28,7 @@ const Signup = () => {
         // implement frontend validation
         console.log(formData)
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/signup', formData)
+            const response = await axios.post('http://localhost:5000/api/auth/signup', formData, {withCredentials:true})
             console.log(response.data)
             if(response.data.success){
                 setFormData({
