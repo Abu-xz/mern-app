@@ -68,7 +68,7 @@ export const login = async (req, res, next) => {
     const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000) // Expiry in 1 hour
     res.cookie('access_token', token, { httpOnly: true, expires: expiryDate })
       .status(200)
-      .json({ success: true, username: validUser.userName, role: validUser.role, message: 'Login Successful.' })
+      .json({ success: true, username: validUser.userName, emailId: validUser.email, role: validUser.role, image: validUser.imageUrl, message: 'Login Successful.' })
 
   } catch (error) {
     next(error);
