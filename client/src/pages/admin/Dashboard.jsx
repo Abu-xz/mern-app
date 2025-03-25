@@ -2,16 +2,21 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import UserForm from '../../components/UserForm';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logoutUser } from '../../redux/user/userSlice';
 
 
 const Dashboard = () => {
   const [users, setUsers] = useState([]);
-  const [search, setSearch] = useState([]);
+  const [search, setSearch] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false)
   const [formData, setFormData] = useState([{ id: '', userName: '', email: '', role: '' }])
-  const [createUser, setCreateUser] = useState({ userName: '', email: '', password: '', role: '' });
+  const [createUser, setCreateUser] = useState({ userName: '', email: '', password: '', role: 'user' });
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchUsers();
@@ -21,9 +26,13 @@ const Dashboard = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/admin/users", { withCredentials: true });
-      setUsers(response.data?.users || []);
+      setUsers(response?.data?.users || []);
     } catch (error) {
-      toast.error(`Error Fetching users: ${error.response?.data?.message || error.message}`)
+      toast.error(error.response?.data?.message || error.message)
+      if (error.response?.status === 401) {
+        dispatch(logoutUser())
+        navigate('/admin-login')
+      }
     }
   }
 
@@ -41,6 +50,10 @@ const Dashboard = () => {
       fetchUsers();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error deleting user');
+      if (error.response?.status === 401) {
+        dispatch(logoutUser())
+        navigate('/admin-login')
+      }
     }
 
   }
@@ -48,13 +61,17 @@ const Dashboard = () => {
   const handleSave = async () => {
     try {
       const { id, ...data } = formData;
-      await axios.put(`http://localhost:5000/api/admin/users/${id}`, data, {withCredentials:true});
+      await axios.put(`http://localhost:5000/api/admin/users/${id}`, data, { withCredentials: true });
       toast.success('User updated successfully');
       setIsEditing(!isEditing);
       setFormData({ id: '', userName: '', email: '', role: '' });
       fetchUsers()
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error updating user')
+      if (error.response?.status === 401) {
+        dispatch(logoutUser())
+        navigate('/admin-login')
+      }
     }
   }
 
@@ -64,15 +81,19 @@ const Dashboard = () => {
 
   const handleCreateNewUser = async () => {
     try {
-      const response = await axios.post(`http://localhost:5000/api/admin/create-user`, createUser, {withCredentials:true});
+      console.log('new user data: ', createUser);
+      const response = await axios.post(`http://localhost:5000/api/admin/create-user`, createUser, { withCredentials: true });
       console.log(response.data);
       toast.success(response.data?.message || 'User Created')
       setIsCreating(!isCreating)
       fetchUsers();
       setCreateUser({ userName: '', email: '', password: '', role: '' })
     } catch (error) {
-      console.log(error)
       toast.error(error.response?.data?.message)
+      if (error.response?.status === 401) {
+        dispatch(logoutUser())
+        navigate('/admin-login')
+      }
     }
   }
 
@@ -83,9 +104,9 @@ const Dashboard = () => {
   const handleSearch = async () => {
     try {
       if (search.trim()) {
-        const response = await axios.get(`http://localhost:5000/api/admin/search/${search}`, {withCredentials:true});
-        console.log('User :', response.data.users)
-        setUsers(response.data.users || []);
+        const response = await axios.get(`http://localhost:5000/api/admin/search/${search}`, { withCredentials: true });
+        console.log('User :', response.data?.users)
+        setUsers(response.data?.users || []);
       } else {
         toast.info('Please enter search term!')
         fetchUsers();
@@ -93,10 +114,14 @@ const Dashboard = () => {
     } catch (error) {
       console.log('Error Search user:', error.response)
       // Handle "User not found"
-      if (error.response?.status === 404) {
+      if (error.response?.status === 401) {
+        dispatch(logoutUser())
+        navigate('/admin-login')
+      } else if(error.response?.status === 404) {
         setUsers([]);
+        toast.error(error.response?.data?.message || 'Users not found');
       }
-      toast.error(error.response?.data?.message || 'Something went wrong')
+      toast.error('Something went wrong.Please try again');
     }
   }
 

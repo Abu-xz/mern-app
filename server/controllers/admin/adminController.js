@@ -52,7 +52,7 @@ export const createUser = async (req, res, next) => {
     try {
         console.log('create user route reached');
         const { userName, email, password, role } = req.body;
-
+        console.log('req body data',req.body)
         if (!userName || !password || !email || !role) {
             console.log("Missing fields");
             return res.status(400).json({ success: false, message: "All fields are required" });

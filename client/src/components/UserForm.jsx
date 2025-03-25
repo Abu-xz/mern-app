@@ -31,7 +31,7 @@ const UserForm = ({ formData, setFormData, handleSubmit, onCancel, isEditing }) 
         )}
         <select
             className='block w-full p-2 mb-2 text-black bg-slate-300 rounded'
-            value={formData.role}
+            value={formData.role || 'user'}
             onChange={(e) => setFormData({ ...formData, role: e.target.value })}
         >
             <option value='user'>User</option>

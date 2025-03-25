@@ -17,7 +17,7 @@ const AdminHeader = () => {
             const response = await axios.get('http://localhost:5000/api/admin/logout', {withCredentials: true});
             dispatch(logoutUser()) // remove current user state
             persistor.purge(); // clear persisted user state
-            toast.success(response.data.message)
+            toast.success(response.data?.message)
             navigate('/login');
 
         } catch {
