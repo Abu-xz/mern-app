@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     userId: null,
     username: null,
+    email: null,
     image: null,
     role: null,
     loading: false,
@@ -21,7 +22,7 @@ const userSlice = createSlice({
             state.username = action.payload?.username;
             state.role = action.payload?.role;
             state.loading = false;
-            state.emailId = action.payload?.emailId;
+            state.email = action.payload?.email;
             state.image = action.payload?.image;
         },
         loginFailure: (state) => {
@@ -33,18 +34,24 @@ const userSlice = createSlice({
             state.image = null;
             state.role = null;
             state.loading = false;
+            state.userId = null
         },
         loadingStart: (state) => {
             state.loading = true
         },
         loadingEnd: (state) => {
             state.loading = false;
+        },
+        updateUserState: (state, action) => {
+            state.username = action.payload?.username;
+            state.email = action.payload?.email;
+            state.image = action.payload?.image;
         }
 
     }
 });
 
-export const { loginStart, loginSuccess, loginFailure, logoutUser, loadingStart, loadingEnd } = userSlice.actions;
+export const { loginStart, loginSuccess, loginFailure, logoutUser, loadingStart, loadingEnd, updateUserState } = userSlice.actions;
 
 export default userSlice.reducer;
 

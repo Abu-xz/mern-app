@@ -1,10 +1,9 @@
 import User from "../../models/userModel.js";
-import jwt from 'jsonwebtoken'
 import { errorHandler } from "../../utils/error.js";
 
 
 export const updateProfile = async (req, res, next) => {
-    console.log('update prfole reached')
+    console.log('update profile reached')
     const { name, email, imageUrl } = req.body;
 
     const userId = req.user.id;

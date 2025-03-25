@@ -3,7 +3,7 @@ import profile_image from '/images/profile_image.jpg'
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { loadingEnd, loadingStart, logoutUser } from '../../redux/user/userSlice';
+import { loadingEnd, loadingStart, logoutUser, updateUserState } from '../../redux/user/userSlice';
 import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
@@ -17,15 +17,11 @@ const Profile = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
 
-  console.log('user data: ', user)
-
   useEffect(() => {
-    if(user){
-      setName(user.username);
-      setEmail(user.emailId);
-    }
-    }, [user]);
- 
+    setName(user.username);
+    setEmail(user.email);
+  }, []);
+
 
 
   const handleImageChange = (e) => {
@@ -38,11 +34,16 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
-
-    if (user.username === name && user.emailId === email && !file) {
-      toast.info('Change something in your profile Fool...')
+    if (!name.trim() || !email.trim()) {
+      toast.error("Name and Email cannot be empty.");
+      return;
+    }
+    if (user.username === name && user.email === email && !file) {
+      toast.info('Make some changes before saving!')
       return
     }
+
+
     dispatch(loadingStart())
     let cloudinaryImageUrl = null;
     if (file) {
@@ -52,9 +53,9 @@ const Profile = () => {
         formData.append('file', file);
         formData.append('upload_preset', "products")
         const response = await axios.post(`https://api.cloudinary.com/v1_1/de5vavykz/image/upload`, formData)
-        cloudinaryImageUrl = response.data.secure_url;
+        cloudinaryImageUrl = response.data?.secure_url;
 
-        if(cloudinaryImageUrl) setImageUrl(cloudinaryImageUrl)
+        if (cloudinaryImageUrl) setImageUrl(cloudinaryImageUrl)
 
       } catch (error) {
         console.log(error.message);
@@ -63,16 +64,14 @@ const Profile = () => {
     }
 
     try {
-      const response = await axios.put('http://localhost:5000/api/users/profile', { name, email, imageUrl: cloudinaryImageUrl }, { withCredentials: true });
-      console.log(response.data);
-      toast.success('Profile saved successfully!')
+      await axios.put('http://localhost:5000/api/users/profile', { name, email, imageUrl: cloudinaryImageUrl }, { withCredentials: true });
+      toast.success('Profile saved successfully!');
+      dispatch(updateUserState({ username: name, email, image: cloudinaryImageUrl }))
       dispatch(loadingEnd());
-      
-      
     } catch (error) {
       console.log('Error while updating user profile', error.message);
-      toast.error( error.response.data?.message||'Failed to update profile');
-      if(error.response.status === 401){
+      toast.error(error.response.data?.message || 'Failed to update profile');
+      if (error.response?.status === 401) {
         navigate('/login');
         dispatch(logoutUser())
       }
@@ -87,8 +86,8 @@ const Profile = () => {
         <div className="flex flex-col items-center mb-10 relative">
           <label htmlFor="imageUrl" className="cursor-pointer relative">
             <img
-             
-             src={imageUrl || (user.image ? user.image : profile_image)}
+
+              src={imageUrl || (user.image ? user.image : profile_image)}
               alt="Profile"
               className={`w-32 h-32 rounded-full border-gray-300 object-cover ${!imageUrl ? "scale-125" : ""
                 }`}
@@ -121,7 +120,7 @@ const Profile = () => {
           <label className="block text-gray-700">Email</label>
           <input
             type="email"
-            value={email}
+            value={email || user.email}
             name='email'
 
             onChange={(e) => setEmail(e.target.value)}
@@ -133,7 +132,7 @@ const Profile = () => {
           onClick={handleSave}
           className="w-full bg-black text-white p-2 rounded-lg hover:bg-white hover:text-black border-2 hover:border-black transition duration-400 cursor-pointer"
         >
-        {user.loading ? 'Saving...' : 'Save'}
+          {user.loading ? 'Saving...' : 'Save'}
 
         </button>
       </div>

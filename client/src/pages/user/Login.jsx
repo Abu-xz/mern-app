@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -14,8 +14,13 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { loading } = useSelector((state) => state.user)
+  const { loading, role } = useSelector((state) => state.user);
 
+  useEffect(() => {
+    if(role){
+      navigate('/')
+    }
+  })
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
@@ -36,8 +41,9 @@ const Login = () => {
         email: '',
         password: '',
       })
-
-      dispatch(loginSuccess(response.data));
+      console.log(response.data)
+      const {emailId, username, image, role} = response.data;
+      dispatch(loginSuccess({email: emailId, username, image, role}));
 
       toast.success(response.data.message)
 
