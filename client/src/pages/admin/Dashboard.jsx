@@ -11,8 +11,9 @@ const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const [isCreating, setIsCreating] = useState(false)
-  const [formData, setFormData] = useState([{ id: '', userName: '', email: '', role: '' }])
+  const [isCreating, setIsCreating] = useState(false);
+  const [prevUserData, setPrevUserData] = useState({ userName: '', email: '', role: 'user' })
+  const [formData, setFormData] = useState({ id: '', userName: '', email: '', role: '' })
   const [createUser, setCreateUser] = useState({ userName: '', email: '', password: '', role: 'user' });
 
   const navigate = useNavigate();
@@ -37,8 +38,14 @@ const Dashboard = () => {
   }
 
   const handleEdit = (user) => {
-    setIsEditing(!isEditing);
-    setFormData({ id: user._id, userName: user.userName, email: user.email, role: user.role });
+    if (formData.id === user._id) {
+      setIsEditing(false);
+      setFormData({ id: '', userName: '', email: '', role: '' });
+    } else {
+      setIsEditing(true);
+      setPrevUserData({email: user.email, userName: user.userName, role: user.role})
+      setFormData({ id: user._id, userName: user.userName, email: user.email, role: user.role });
+    }
   }
 
   const handleDelete = async (id) => {
@@ -61,6 +68,11 @@ const Dashboard = () => {
   const handleSave = async () => {
     try {
       const { id, ...data } = formData;
+      
+      if(prevUserData.email === data.email && prevUserData.userName === data.userName && prevUserData.role === data.role){
+        toast.info('Make some changes before saving!');
+        return;
+      }
       await axios.put(`http://localhost:5000/api/admin/users/${id}`, data, { withCredentials: true });
       toast.success('User updated successfully');
       setIsEditing(!isEditing);
@@ -87,7 +99,7 @@ const Dashboard = () => {
       toast.success(response.data?.message || 'User Created')
       setIsCreating(!isCreating)
       fetchUsers();
-      setCreateUser({ userName: '', email: '', password: '', role: '' })
+      setCreateUser({ userName: '', email: '', password: '', role: 'user' })
     } catch (error) {
       toast.error(error.response?.data?.message)
       if (error.response?.status === 401) {
@@ -105,7 +117,6 @@ const Dashboard = () => {
     try {
       if (search.trim()) {
         const response = await axios.get(`http://localhost:5000/api/admin/search/${search}`, { withCredentials: true });
-        console.log('User :', response.data?.users)
         setUsers(response.data?.users || []);
       } else {
         toast.info('Please enter search term!')
