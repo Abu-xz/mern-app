@@ -3,7 +3,8 @@ import profile_image from '/images/profile_image.jpg'
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { loadingEnd, loadingStart } from '../../redux/user/userSlice';
+import { loadingEnd, loadingStart, logoutUser } from '../../redux/user/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const [imageUrl, setImageUrl] = useState(null);
@@ -11,14 +12,19 @@ const Profile = () => {
   const [email, setEmail] = useState("");
   const [file, setFile] = useState(null);
 
+  const navigate = useNavigate();
+
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+
   console.log('user data: ', user)
 
   useEffect(() => {
-    setName(user.username);
-    setEmail(user.emailId);
- }, [user]);
+    if(user){
+      setName(user.username);
+      setEmail(user.emailId);
+    }
+    }, [user]);
  
 
 
@@ -48,6 +54,8 @@ const Profile = () => {
         const response = await axios.post(`https://api.cloudinary.com/v1_1/de5vavykz/image/upload`, formData)
         cloudinaryImageUrl = response.data.secure_url;
 
+        if(cloudinaryImageUrl) setImageUrl(cloudinaryImageUrl)
+
       } catch (error) {
         console.log(error.message);
         toast.error('Image upload failed')
@@ -63,7 +71,11 @@ const Profile = () => {
       
     } catch (error) {
       console.log('Error while updating user profile', error.message);
-      toast.error('Failed to update profile')
+      toast.error( error.response.data?.message||'Failed to update profile');
+      if(error.response.status === 401){
+        navigate('/login');
+        dispatch(logoutUser())
+      }
       dispatch(loadingEnd());
     }
   };

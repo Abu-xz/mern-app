@@ -5,6 +5,7 @@ export const verifyToken = (req, res, next) => {
     const token = req.cookies.access_token || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
+        console.log('token expired')
         return res.status(401).json({ message: "Unauthorized, no token provided!" });
     }
     
